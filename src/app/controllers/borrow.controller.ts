@@ -58,13 +58,11 @@ borrowRoute.get("/", async (req: Request, res: Response) => {
         totalQuantity: { $sum: "$quantity" },
       },
     },
+
     {
       $project: {
         _id: 0,
-        book: {
-          title: "$_id.title",
-          isbn: "$_id.isbn",
-        },
+        book: { title: "$_id.title", isbn: "$_id.isbn" },
         totalQuantity: 1,
       },
     },
