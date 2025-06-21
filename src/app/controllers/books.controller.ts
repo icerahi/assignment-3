@@ -58,7 +58,7 @@ booksRoute.get(
     try {
       const bookId = req.params.bookId;
 
-      const book = await Book.findById(bookId);
+      const book = await Book.findOne({ _id: bookId });
 
       if (!book) {
         throw new Error(`No book found with Id '${bookId}'`);
@@ -76,21 +76,33 @@ booksRoute.get(
 );
 
 //Update a book
-booksRoute.put("/:bookId", async (req: Request, res: Response) => {
-  const bookId = req.params.bookId;
-  const body = req.body;
+booksRoute.put(
+  "/:bookId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const bookId = req.params.bookId;
+      const body = req.body;
 
-  // Using 'findOneAndUpdate' is required to trigger the post middleware,which will auto update book `available=true`
-  const book = await Book.findOneAndUpdate({ _id: bookId }, body, {
-    new: true,
-  });
+      // findOneAndUpdate triggers post middleware
+      const book = await Book.findOneAndUpdate({ _id: bookId }, body, {
+        new: true,
+        runValidators: true,
+      });
 
-  res.status(200).json({
-    success: true,
-    message: "Book updated successfully",
-    data: book,
-  });
-});
+      if (!book) {
+        throw new Error(`No book found with Id '${bookId}'`);
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Book updated successfully",
+        data: book,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 //Delete a book
 booksRoute.delete(
@@ -99,7 +111,8 @@ booksRoute.delete(
     try {
       const bookId = req.params.bookId;
 
-      const book = await Book.findByIdAndDelete(bookId);
+      //findOneAndDelete triggers pre middleware
+      const book = await Book.findOneAndDelete({ _id: bookId });
 
       if (!book) {
         throw new Error(`Book not found with Id ${bookId}`);

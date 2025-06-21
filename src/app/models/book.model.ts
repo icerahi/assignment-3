@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { BookStaticMethods, IBook } from "../interfaces/book.interface";
+import { Borrow } from "./borrow.model";
 
 const bookSchema = new Schema<IBook, BookStaticMethods>(
   {
@@ -42,11 +43,24 @@ bookSchema.static("setUnavailable", function setUnavailable(book) {
   book.available = false;
 });
 
-//when new copies of book added, it will trigger and auto-set `available=true`
-bookSchema.post("findOneAndUpdate", async (doc) => {
-  if (doc.copies !== 0 && doc.available === false) {
+//when new copies of book added, it will auto-set `available=true`
+bookSchema.post("findOneAndUpdate", async function (doc, next) {
+  if (doc && doc.copies !== 0 && doc.available === false) {
     doc.available = true;
+    await doc.save();
   }
+  next();
+});
+
+//implementing on-delete cascade using pre middleware
+bookSchema.pre("findOneAndDelete", async function (next) {
+  const filter = this.getFilter();
+  const bookId = filter._id;
+  const book = await this.model.findById(bookId);
+  if (book) {
+    await Borrow.deleteMany({ book: book._id });
+  }
+  next();
 });
 
 export const Book = model<IBook, BookStaticMethods>("Book", bookSchema);

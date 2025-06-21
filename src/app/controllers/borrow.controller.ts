@@ -16,12 +16,12 @@ borrowRoute.post(
         throw new Error(`Book not found with Id ${bookId}`);
       }
 
-      //check if book has enough available copies, and deduct the quantity if sufficient.
+      //check if book has enough available copies and then deduct the quantity.
       if (book?.copies && book.copies >= quantity) {
         book.copies = book.copies - quantity;
 
         if (book.copies === 0) {
-          Book.setUnavailable(book); //set available=false, when copies become 0
+          Book.setUnavailable(book); //set available=false, if copies become 0
         }
         await book.save();
 
