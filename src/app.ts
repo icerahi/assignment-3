@@ -15,7 +15,7 @@ app.get("/", (req: Request, res: Response) => {
   );
 });
 
-//Not found route
+//404Not found handling
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
     message: "Requested endpoint not found!",
@@ -23,7 +23,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-//Global error handler
+//Global error handling
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error) {
     res.status(400).json({
