@@ -67,7 +67,6 @@ npm install
 Create a `.env` file in the root folder:
 
 ```env
-PORT=5000
 DATABASE_URL=your_mongodb_connection_string
 ```
 
@@ -81,7 +80,6 @@ npm run dev
 
 ```bash
 npm run build
-npm start
 ```
 
 ---
