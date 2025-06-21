@@ -20,13 +20,11 @@ const bookSchema = new Schema<IBook, BookStaticMethods>(
       },
       uppercase: true,
     },
-
     isbn: {
       type: String,
       required: [true, "ISBN is a required field."],
       unique: true,
     },
-
     description: { type: String },
     copies: {
       type: Number,
@@ -35,10 +33,20 @@ const bookSchema = new Schema<IBook, BookStaticMethods>(
     },
     available: { type: Boolean, default: true },
   },
+
   { versionKey: false, timestamps: true }
 );
 
+// when book copies = 0, this method call will set book `available=false`
 bookSchema.static("setUnavailable", function setUnavailable(book) {
   book.available = false;
 });
+
+//when new copies of book added, it will trigger and auto-set `available=true`
+bookSchema.post("findOneAndUpdate", async (doc) => {
+  if (doc.copies !== 0 && doc.available === false) {
+    doc.available = true;
+  }
+});
+
 export const Book = model<IBook, BookStaticMethods>("Book", bookSchema);
