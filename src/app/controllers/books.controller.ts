@@ -27,7 +27,7 @@ booksRoute.get("/", async (req: Request, res: Response, next: NextFunction) => {
     const { filter, sortBy, sort, limit } = req.query;
 
     const filterQuery = filter ? { genre: filter } : {};
-    const limitNumber = parseInt(limit as string) || 10;
+    const limitNumber = parseInt(limit as string);
     const sortOrder = sort === "desc" ? -1 : 1;
 
     let books = [];
@@ -38,7 +38,9 @@ booksRoute.get("/", async (req: Request, res: Response, next: NextFunction) => {
         .sort({ [sortBy as string]: sortOrder })
         .limit(limitNumber);
     } else {
-      books = await Book.find(filterQuery).limit(limitNumber);
+      books = await Book.find(filterQuery)
+        .sort({ createdAt: "desc" })
+        .limit(limitNumber);
     }
 
     res.status(200).json({
