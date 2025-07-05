@@ -6,8 +6,6 @@ A simple RESTful API built with **TypeScript**, **Express**, and **MongoDB** for
 
 🔗 [https://assignment-3-two-pi.vercel.app/api/books](https://assignment-3-two-pi.vercel.app/)
 
-Frontend Repo:[https://assignment4frontend.vercel.app/](https://assignment4frontend.vercel.app/)
-
 ## 🚀 Features
 
 - Add, update, delete, and retrieve books.
